@@ -1,7 +1,7 @@
 -- 1
 with filmrentals as (
     select 
-        f.release_year,f.title,
+        f.release_year, f.title,
         count(r.rental_id) as rental_count,
         rank() over (partition by f.release_year order by count(r.rental_id) desc) as rank
     from film f
@@ -15,8 +15,7 @@ where rank = 1;
 
 -- 2
 select 
-    a.first_name,
-    a.last_name,
+    a.first_name, a.last_name,
     count(*) as comedy_appearances
 from actor a
 join film_actor fa on a.actor_id = fa.actor_id
@@ -41,8 +40,7 @@ where actor_id not in (
 -- 4
 with categoryrentals as (
     select 
-        c.name as category_name,
-        f.title,
+        c.name as category_name, f.title,
         count(r.rental_id) as rental_count,
         row_number() over (partition by c.name order by count(r.rental_id) desc) as rank
     from category c
@@ -59,14 +57,12 @@ where rank <= 3;
 -- 5
 with yearlydata as (
     select 
-        release_year,
-        count(*) as films_count
+        release_year, count(*) as films_count
     from film
     group by release_year
 )
 select 
-    release_year,
-    films_count,
+    release_year, films_count,
     sum(films_count) over (order by release_year) as cumulative_total
 from yearlydata
 order by release_year;
@@ -75,8 +71,7 @@ order by release_year;
 select 
     to_char(r.rental_date, 'yyyy-mm') as month,
     round(
-        (sum(case when c.name = 'Animation' then 1 else 0 end)::decimal / count(*)) * 100,
-        2
+        (sum(case when c.name = 'Animation' then 1 else 0 end)::decimal / count(*)) * 100, 2
     ) as animation_percentage
 from rental r
 join inventory i on r.inventory_id = i.inventory_id
@@ -88,8 +83,7 @@ order by month;
 -- 7
 with actorgenrestats as (
     select 
-        a.first_name,
-        a.last_name,
+        a.first_name, a.last_name,
         sum(case when c.name = 'Action' then 1 else 0 end) as action_count,
         sum(case when c.name = 'Drama' then 1 else 0 end) as drama_count
     from actor a
@@ -104,8 +98,7 @@ where action_count > drama_count;
 
 -- 8
 select 
-    cust.first_name,
-    cust.last_name,
+    cust.first_name, cust.last_name,
     sum(p.amount) as total_spent
 from customer cust
 join payment p on cust.customer_id = p.customer_id
@@ -120,8 +113,7 @@ limit 5;
 
 -- 9
 select 
-    substring(address from ' ([^ ]+)$') as street_type,
-    count(*) as count
+    substring(address from ' ([^ ]+)$') as street_type, count(*) as count
 from address
 group by street_type
 order by count desc;
